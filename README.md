@@ -71,3 +71,11 @@ The public pages read current family data from https://tavori-family-editor.blus
 “כניסה ועריכה” opens the authenticated family editor in a separate tab. Signed-in guests can update details, relationships and photos directly. D1 persists records and change history; R2 persists compressed images. The editor rejects stale concurrent edits and ancestry cycles. The local draft editor remains a separate manual backup workflow; GitHub changes do not overwrite shared person overlays. When changing the base dataset, update `lib/family.json` in the service too.
 
 The backend checkout is `../family-tree-service`; its source is published through Sites. No authentication tokens are included in the GitHub Pages code.
+
+## Birth surnames, profile details and timeline
+
+The family model preserves optional personal details and custom facts. Birth surnames appear beneath the person's name in the tree and in their profile. Profile photos use the same stored image as the family album. The authenticated editor controls both.
+
+The “סיפורים וזיכרונות” view shows stored memories alongside personal biographies; “ציר זמן” shows historical events ordered by year (undated entries come last). Entries can include a date, location, source link, photo and linked people. Shared entries appear on both family pages; family-specific entries retain the separation between branches. Entry links in a person's profile open their full story. Add/edit actions open the authenticated shared editor.
+
+Local previews on `127.0.0.1` read the backend on port 5173; the public website uses the hosted service. Preview records are separate from production data.
