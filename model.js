@@ -1,3 +1,5 @@
+import {parseFamilyDate,normalizeFamilyDate} from './genealogy-dates.js?v=20261011-7';
+import {normalizeBirthLocation,formatBirthLocation} from './birth-places.js?v=20261011-7';
 export const BRANCH_NAMES = {tavori:'משפחת תבורי',gorsht:'משפחת גורשט',shared:'ענף משותף',other:'ענף נוסף'};
 export const SOURCE_URL = 'https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI';
 const TEXT_FIELDS = ['name','maidenName','birthDate','birthPlace','deathDate','residence','occupation','bio','sourceNote','alternateNames','deathPlace','burialPlace','nationality','education','languages','militaryService','migration'];
@@ -13,6 +15,8 @@ export function normalizeFamily(input){
     const person={id:raw.id,branch:raw.branch in BRANCH_NAMES ? raw.branch : 'other',parentIds:[],partnerIds:[],lifeStatus:['unknown','living','deceased'].includes(raw.lifeStatus)?raw.lifeStatus:'unknown'};
     for(const field of TEXT_FIELDS){if(raw[field]!==undefined && typeof raw[field]!=='string')throw new Error('שדה טקסט לא תקין.');person[field]=(raw[field]||'').trim();if(person[field].length>(field==='bio'?20000:field==='sourceNote'?2000:200))throw new Error('אחד משדות הטקסט ארוך מדי.');}
     if(!person.name)throw new Error('יש לתת שם לכל אדם.');
+    person.birthDate=normalizeFamilyDate(person.birthDate);person.birthLocation=normalizeBirthLocation(raw.birthLocation);
+    if(person.birthLocation){person.birthPlace=formatBirthLocation(person.birthLocation);if(person.birthPlace.length>200)throw new Error('מקום הלידה ארוך מדי.');}
     for(const field of ['parentIds','partnerIds']){
       if(raw[field]!==undefined && (!Array.isArray(raw[field]) || raw[field].some(id=>typeof id!=='string')))throw new Error('רשימת קשרים אינה תקינה.');
       person[field]=[...new Set(raw[field]||[])];
@@ -47,6 +51,7 @@ export function normalizeFamily(input){
 }
 export function updatePerson(family,person){
   const copy=structuredClone(family);const old=copy.people.find(p=>p.id===person.id);
+  if(parseFamilyDate(person.birthDate||'').precision==='legacy'&&(person.birthDate||'')!==(old?.birthDate||''))throw new Error('יש להזין תאריך לידה מלא עם שנה בארבע ספרות, או שנה בלבד.');
   for(const other of copy.people){other.partnerIds=other.partnerIds.filter(id=>id!==person.id);}
   const index=copy.people.findIndex(p=>p.id===person.id);
   if(index>=0)copy.people[index]=person;else copy.people.push(person);
