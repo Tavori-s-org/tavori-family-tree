@@ -56,7 +56,7 @@ npm test
 
 ## ציבוריות ופרטיות
 
-האתר והמאגר ציבוריים לפי בקשת עומר. מידע ותמונות שפורסמו זמינים לכל אדם, גם בקובץ JSON ובהיסטוריית Git. הסרה בתצוגה לא מוחקת עותקים או היסטוריה. פרסמו רק פרטים שבני המשפחה מסכימים לשתף. אין חשבונות משתמשים, כלי מעקב או analytics; GitHub מארח את האתר, וגופנים נטענים מ־Google Fonts. טיוטות אינן מועברות לשרת.
+האתר והמאגר ציבוריים לפי בקשת עומר. מידע ותמונות שפורסמו זמינים לכל אדם, גם בקובץ JSON ובהיסטוריית Git. הסרה בתצוגה לא מוחקת עותקים או היסטוריה. פרסמו רק פרטים שבני המשפחה מסכימים לשתף. הצפייה פתוחה, והעריכה המשותפת דורשת התחברות עם ChatGPT. אין כלי מעקב או analytics; GitHub מארח את האתר, וגופנים נטענים מ־Google Fonts. טיוטות אינן מועברות לשרת.
 
 ## תצוגת דורות
 
@@ -79,3 +79,9 @@ The family model preserves optional personal details and custom facts. Birth sur
 The “סיפורים וזיכרונות” view shows stored memories alongside personal biographies; “ציר זמן” shows historical events ordered by year (undated entries come last). Entries can include a date, location, source link, photo and linked people. Shared entries appear on both family pages; family-specific entries retain the separation between branches. Entry links in a person's profile open their full story. Add/edit actions open the authenticated shared editor.
 
 Local previews on `127.0.0.1` read the backend on port 5173; the public website uses the hosted service. Preview records are separate from production data.
+
+## מרכוז תמונה וכרטיס אישי
+
+העורך המשותף פותח תצוגה מקדימה לפני העלאת תמונת פרופיל. אפשר לגרור, להגדיל, להזיז עם החצים או המחוונים ולאפס למרכז. אחרי “שימוש בתמונה” יש לשמור את פרטי האדם. אפשר לחזור ל“שינוי מרכוז התמונה” גם לאחר השמירה; נשמרים צילום מלא עד 1600 פיקסלים, חיתוך ריבועי 640 פיקסלים ונתוני המיקום. האילן, האלבום והכרטיס האישי משתמשים באותו חיתוך. ביטול בחלון המרכוז שומר על התמונה הקודמת.
+
+כרטיס האדם הציבורי כולל לשוניות לפרטים אישיים, למשפחה ולסיפור וזיכרונות. תאריכים ומקומות מוצגים יחד בתחנות החיים, לצד קבוצות של שם וזהות, חיי היומיום ופרטים נוספים. קשרי משפחה כוללים הורים, בני זוג, ילדים ואחים ואחיות שנרשמו באילן. העורך מחלק את השדות לקבוצות תואמות, מאפשר בחירת קשרים ללא Ctrl/⌘ ומציג מצב של שינויים שטרם נשמרו.

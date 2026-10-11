@@ -22,7 +22,12 @@ export function normalizeFamily(input){
     person.gender=['unknown','male','female','other'].includes(raw.gender)?raw.gender:'unknown';
     if(raw.facts!==undefined&&(!Array.isArray(raw.facts)||raw.facts.length>40))throw new Error('רשימת הפרטים הנוספים אינה תקינה.');
     person.facts=(raw.facts||[]).map(f=>{if(!f||typeof f.label!=='string'||typeof f.value!=='string'||f.label.length>100||f.value.length>1000)throw new Error('פרט נוסף אינו תקין.');return {label:f.label.trim(),value:f.value.trim()};}).filter(f=>f.label&&f.value);
-    person.photo=safePhoto(raw.photo);person.source=raw.source===SOURCE_URL?SOURCE_URL:'';
+    person.photo=safePhoto(raw.photo);
+    if(raw.photoOriginal&&!safePhoto(raw.photoOriginal))throw new Error('תמונת המקור אינה תקינה.');
+    if(raw.photoCrop!==undefined&&raw.photoCrop!==null){const c=raw.photoCrop;if(!c||typeof c!=='object'||![c.x,c.y,c.zoom].every(Number.isFinite)||c.x<0||c.x>1||c.y<0||c.y>1||c.zoom<1||c.zoom>4)throw new Error('נתוני מרכוז התמונה אינם תקינים.');}
+    person.photoOriginal=person.photo?safePhoto(raw.photoOriginal):'';
+    person.photoCrop=person.photo&&raw.photoCrop?{x:raw.photoCrop.x,y:raw.photoCrop.y,zoom:raw.photoCrop.zoom}:null;
+    person.source=raw.source===SOURCE_URL?SOURCE_URL:'';
     return person;
   });
   const byId=new Map(people.map(p=>[p.id,p]));
