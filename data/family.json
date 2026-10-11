@@ -20,10 +20,16 @@
       "id": "leah",
       "name": "לאה תבורי",
       "branch": "tavori",
-      "parentIds": [],
+      "parentIds": [
+        "simcha-reznik",
+        "hinka-reznik"
+      ],
       "partnerIds": [
         "amichai"
-      ]
+      ],
+      "maidenName": "רזניק",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "השם לאה והקשר לעמיחי נמסרו על ידי עומר. במקור, בת הזוג של האדם שהוריו שמחה ולאה תבורי מופיעה לבית רזניק, עם ההורים שמחה וחינקה רזניק; שמה הפרטי מוסתר. נקרא ב־11.10.2026."
     },
     {
       "id": "leon",
@@ -399,6 +405,36 @@
       "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
       "sourceNote": "פרטים וקשרים גלויים מתוך MyHeritage. נקרא ב־11.10.2026.",
       "birthDate": "1912"
+    },
+    {
+      "id": "simcha-reznik",
+      "name": "שמחה רזניק",
+      "branch": "tavori",
+      "parentIds": [],
+      "partnerIds": [
+        "hinka-reznik"
+      ],
+      "birthDate": "21 בפברואר 1907",
+      "birthPlace": "מיר, בלארוס",
+      "deathDate": "26 בספטמבר 1998",
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים גלויים מתוך MyHeritage. נקרא ב־11.10.2026. הורים בכרטיס בן/בת הזוג לבית רזניק של עמיחי; השם הפרטי של בתם מוסתר במקור."
+    },
+    {
+      "id": "hinka-reznik",
+      "name": "חינקה רזניק",
+      "maidenName": "רבינוביץ",
+      "branch": "tavori",
+      "parentIds": [],
+      "partnerIds": [
+        "simcha-reznik"
+      ],
+      "birthDate": "1910",
+      "deathDate": "26 בספטמבר 2003",
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים גלויים מתוך MyHeritage. נקרא ב־11.10.2026. הורים בכרטיס בן/בת הזוג לבית רזניק של עמיחי; השם הפרטי של בתם מוסתר במקור."
     }
   ]
 }

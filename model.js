@@ -75,6 +75,42 @@ export function layoutTree(people){
   rows.forEach((row,level)=>{if(!row)return;const rowWidth=row.length*(cardWidth+gap)-gap;row.forEach((p,index)=>positions.set(p.id,{x:(width-rowWidth)/2+(row.length-index-1)*(cardWidth+gap),y:42+level*rowHeight,level}));});
   return {width,height,positions,rows,cardWidth,cardHeight};
 }
+export function generationWindow(layout,focusId,limit='all'){
+  const total=layout.rows.length,focusLevel=layout.positions.get(focusId)?.level||0;
+  if(limit==='all'||!total)return {min:0,max:Math.max(0,total-1),focusLevel};
+  const count=Math.min(total,Math.max(1,Number(limit)||3));
+  // Include the person's children and spend the remaining rows on ancestors.
+  const min=Math.max(0,Math.min(total-count,focusLevel-(count-2)));
+  return {min,max:min+count-1,focusLevel};
+}
+export function generationLabel(offset,name){
+  if(offset===0)return `הדור של ${name}`;
+  return ({'-1':'דור ההורים','-2':'דור הסבים והסבתות','1':'דור הילדים','2':'דור הנכדים והנכדות'})[String(offset)]||(offset<0?`${-offset} דורות קודם`:`${offset} דורות אחר כך`);
+}
+export function treeConnections(people,layout){
+  const {positions,cardWidth:w,cardHeight:h}=layout,partners=[],parentLinks=[],families=new Map(),seen=new Set(),byId=new Map(people.map(p=>[p.id,p]));
+  for(const person of people){const point=positions.get(person.id);if(!point)continue;
+    for(const id of person.partnerIds){const other=positions.get(id),key=[person.id,id].sort().join('|');if(!other||seen.has(key))continue;seen.add(key);
+      const left=point.x<other.x?point:other,right=point.x<other.x?other:point;
+      const adjacent=left.y===right.y&&right.x-left.x<w*1.3;
+      partners.push({ids:[person.id,id],path:adjacent?`M${left.x+w},${left.y+h/2} H${right.x}`:`M${left.x+w/2},${left.y} V${Math.min(left.y,right.y)-14} H${right.x+w/2} V${right.y}`});
+    }
+    const ids=person.parentIds.filter(id=>positions.has(id)).sort();if(!ids.length)continue;
+    const key=ids.join('|');if(!families.has(key))families.set(key,{ids,children:[]});families.get(key).children.push(person.id);
+  }
+  for(const group of families.values()){
+    const parents=group.ids.map(id=>positions.get(id)),children=group.children.map(id=>positions.get(id)),rows=new Map();
+    for(const child of children){if(!rows.has(child.y))rows.set(child.y,[]);rows.get(child.y).push(child);}
+    const ordered=[...parents].sort((a,b)=>a.x-b.x),couple=parents.length===2&&parents[0].y===parents[1].y&&ordered[1].x-ordered[0].x<w*1.3&&byId.get(group.ids[0]).partnerIds.includes(group.ids[1]);
+    for(const [y,row] of rows){const bus=y-28,minX=Math.min(...row.map(p=>p.x+w/2)),maxX=Math.max(...row.map(p=>p.x+w/2));let path='';
+      if(couple){const joint=(ordered[0].x+w+ordered[1].x)/2;path+=`M${joint},${parents[0].y+h/2} V${bus} M${Math.min(joint,minX)},${bus} H${Math.max(joint,maxX)} `;}
+      else for(const parent of parents){const x=parent.x+w/2;path+=`M${x},${parent.y+h} V${bus} M${Math.min(x,minX)},${bus} H${Math.max(x,maxX)} `;}
+      for(const child of row)path+=`M${child.x+w/2},${bus} V${child.y} `;
+      parentLinks.push({parentIds:group.ids,childIds:group.children.filter(id=>positions.get(id).y===y),path});
+    }
+  }
+  return {partners,parentLinks};
+}
 export function parseGedcom(text){
   if(/\n1 CHAR (?:ANSEL|ANSI)/i.test(text))throw new Error('יש לייצא מחדש בקידוד UTF-8 כדי לשמור על השמות בעברית.');
   const root={tag:'ROOT',children:[]},stack=[root];let invalid=0;
