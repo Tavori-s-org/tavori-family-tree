@@ -1,6 +1,7 @@
-import {BRANCH_NAMES,escapeHtml as esc,safePhoto,normalizeFamily,updatePerson,layoutTree,generationWindow,generationLabel,treeConnections,parseGedcom} from './model.js?v=20261011-2';
+import {BRANCH_NAMES,escapeHtml as esc,safePhoto,normalizeFamily,updatePerson,projectFamily,layoutTree,generationWindow,generationLabel,treeConnections,parseGedcom} from './model.js?v=20261011-3';
 const $=selector=>document.querySelector(selector),DRAFT_KEY='tavori-family-draft-v1';
-let published,family,editing=false,view='tree',branch='all',query='',zoom=1,focusId='',generationLimit='3',fullLayout,scope,treePeople=[],layout,toastTimer,pendingPhoto='';
+const pageBranch=document.body.dataset.family,requestedFocus=new URLSearchParams(location.search).get('person');
+let published,family,pageFamily,editing=false,view='tree',query='',zoom=1,focusId=requestedFocus||'',generationLimit='3',fullLayout,scope,treePeople=[],layout,toastTimer,pendingPhoto='';
 const form=$('#person-form');
 function toast(message){clearTimeout(toastTimer);$('#toast').textContent=message;$('#toast').hidden=false;toastTimer=setTimeout(()=>$('#toast').hidden=true,5000);}
 function showError(selector,error){const el=$(selector);el.textContent=error.message||String(error);el.hidden=false;}
@@ -9,25 +10,26 @@ function avatar(person){const photo=safePhoto(person.photo);return `<span class=
 function dateLabel(person){return [person.birthDate,person.deathDate].filter(Boolean).join(' – ')||(person.lifeStatus==='deceased'?'לזכרם':'');}
 function relationship(person){const root=byId(focusId);if(!root)return BRANCH_NAMES[person.branch];if(person.id===root.id)return 'האדם הנבחר';if(root.partnerIds.includes(person.id))return 'בן / בת זוג · אותו דור';if(root.parentIds.includes(person.id))return `הורה של ${root.name.split(' ')[0]}`;if(person.parentIds.includes(root.id))return 'הדור הבא';return BRANCH_NAMES[person.branch];}
 function optionLabel(person){const duplicates=family.people.filter(p=>p.name===person.name).length>1;if(!duplicates)return person.name;const detail=person.birthDate||person.parentIds.map(id=>byId(id)?.name).filter(Boolean).join(' ו־')||BRANCH_NAMES[person.branch];return `${person.name} · ${detail}`;}
-function isVisible(person){return (branch==='all'||person.branch===branch||person.branch==='shared')&&(!query||[person.name,person.maidenName].filter(Boolean).join(' ').includes(query));}
+function isVisible(person){return !query||[person.name,person.maidenName].filter(Boolean).join(' ').includes(query);}
 function empty(icon,title,description){return `<div class="empty-state"><span class="empty-icon" aria-hidden="true">${icon}</span><h3>${esc(title)}</h3><p>${esc(description)}</p>${editing?'<button class="button primary" data-add>הוספת מידע לבני המשפחה</button>':''}</div>`;}
 function render(){
-  $('#people-count').textContent=family.people.length;$('#photo-count').textContent=family.people.filter(p=>safePhoto(p.photo)).length;
-  if(!byId(focusId))focusId=family.rootId;
-  fullLayout=layoutTree(family.people);$('#generation-count').textContent=fullLayout.rows.filter(Boolean).length;
+  pageFamily=projectFamily(family,pageBranch);
+  $('#people-count').textContent=pageFamily.people.length;$('#photo-count').textContent=pageFamily.people.filter(p=>safePhoto(p.photo)).length;
+  if(!pageFamily.people.some(p=>p.id===focusId))focusId=pageFamily.rootId;
+  fullLayout=layoutTree(pageFamily.people);$('#generation-count').textContent=fullLayout.rows.filter(Boolean).length;
   scope=generationWindow(fullLayout,focusId,generationLimit);
-  treePeople=family.people.filter(p=>{const level=fullLayout.positions.get(p.id).level;return level>=scope.min&&level<=scope.max;});
+  treePeople=pageFamily.people.filter(p=>{const level=fullLayout.positions.get(p.id).level;return level>=scope.min&&level<=scope.max;});
   layout={...fullLayout,rows:fullLayout.rows.slice(scope.min,scope.max+1),height:Math.max(250,(scope.max-scope.min+1)*218+30),positions:new Map(treePeople.map(p=>[p.id,{...fullLayout.positions.get(p.id),y:fullLayout.positions.get(p.id).y-scope.min*218}]))};
-  $('#focus-person').innerHTML=family.people.map(p=>`<option value="${esc(p.id)}">${esc(optionLabel(p))}</option>`).join('');$('#focus-person').value=focusId;$('#generations').value=generationLimit;
+  $('#focus-person').innerHTML=pageFamily.people.map(p=>`<option value="${esc(p.id)}">${esc(optionLabel(p))}</option>`).join('');$('#focus-person').value=focusId;$('#generations').value=generationLimit;
+  $('#manage-person').innerHTML='<option value="">בחירת אדם לעריכה…</option>'+family.people.map(p=>`<option value="${esc(p.id)}">${esc(optionLabel(p))}</option>`).join('');$('#edit-managed-person').disabled=!editing;
   $('#fit').setAttribute('aria-label',`מרכוז האילן סביב ${byId(focusId)?.name||'האדם הנבחר'}`);
   $('#draft-banner').hidden=!editing;$('#add-person').hidden=!editing;
   const config={tree:['אילן היוחסין','הקשרים שמחברים אותנו'],people:['בני המשפחה','לכל אדם יש מקום בסיפור'],album:['אלבום תמונות','רגעים שנשארים איתנו'],stories:['סיפורים וזיכרונות','המילים שעוברות בין הדורות']}[view];
   $('#view-title').textContent=config[0];$('#view-kicker').textContent=config[1];
   for(const key of ['tree','people','album','stories'])$(`#${key}-view`).hidden=view!==key;
   for(const button of document.querySelectorAll('[data-view]')){button.classList.toggle('active',button.dataset.view===view);if(button.dataset.view===view)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');}
-  for(const button of document.querySelectorAll('[data-branch]')){button.classList.toggle('active',button.dataset.branch===branch);button.setAttribute('aria-pressed',String(button.dataset.branch===branch));}
-  renderTree();const visible=family.people.filter(isVisible);
-  $('#people-grid').innerHTML=visible.map(p=>`<button class="person-tile" data-person="${esc(p.id)}">${avatar(p)}<span><strong>${esc(p.name)}</strong><small>${esc(BRANCH_NAMES[p.branch])}</small>${dateLabel(p)?`<small>${esc(dateLabel(p))}</small>`:''}</span></button>`).join('')||empty('⌕','לא נמצאו בני משפחה','נסו לחפש שם אחר או לבחור בכל המשפחה.');
+  renderTree();const visible=pageFamily.people.filter(isVisible);
+  $('#people-grid').innerHTML=visible.map(p=>`<button class="person-tile" data-person="${esc(p.id)}">${avatar(p)}<span><strong>${esc(p.name)}</strong><small>${esc(BRANCH_NAMES[p.branch])}</small>${dateLabel(p)?`<small>${esc(dateLabel(p))}</small>`:''}</span></button>`).join('')||empty('⌕','לא נמצאו בני משפחה','נסו לחפש שם אחר באילן הזה, או לעבור לדף המשפחה השנייה.');
   const photos=visible.filter(p=>safePhoto(p.photo));$('#album-grid').innerHTML=photos.map(p=>`<button class="photo-tile" data-person="${esc(p.id)}"><img src="${p.photo}" alt="תמונה של ${esc(p.name)}" loading="lazy"><span>${esc(p.name)}</span></button>`).join('')||empty('▧','התמונות עוד יגיעו','כאן יופיעו התמונות של בני המשפחה. לכל תמונה יהיה שם וקישור לסיפור של האדם שבתוכה.');
   const stories=visible.filter(p=>p.bio);$('#stories-grid').innerHTML=stories.map(p=>`<button class="story-card" data-person="${esc(p.id)}"><h3>${esc(p.name)}</h3><p>${esc(p.bio)}</p><small>לסיפור המלא ←</small></button>`).join('')||empty('❧','יש סיפורים שרק אנחנו מכירים','זיכרון מבית ילדות, מסורת משפחתית או רגע משותף. כאן יהיה המקום שלהם, כשנוסיף אותם.');
 }
@@ -38,14 +40,15 @@ function renderTree(){
   const root=byId(focusId),labelX=positions.get(focusId)?.x||width/2;
   layout.rows.forEach((row,level)=>{if(row)html+=`<span class="generation-label" style="top:${12+level*218}px;left:${labelX}px">${esc(generationLabel(level+scope.min-scope.focusLevel,root?.name||'האדם הנבחר'))}</span>`;});
   for(const p of treePeople){const point=positions.get(p.id);html+=`<button class="tree-card ${esc(p.branch)} ${p.id===focusId||root?.partnerIds.includes(p.id)?'focus-person':''} ${isVisible(p)?'':'dimmed'}" data-person="${esc(p.id)}" data-generation="${point.level-scope.focusLevel}" style="left:${point.x}px;top:${point.y}px" aria-label="${esc(p.name)}, ${esc(relationship(p))}${dateLabel(p)?', '+esc(dateLabel(p)):''}">${avatar(p)}<strong>${esc(p.name)}</strong><span class="card-dates">${esc(dateLabel(p))||'&nbsp;'}</span><span class="card-role">${esc(relationship(p))}</span></button>`;}
-  if(!family.people.length)html=empty('♧','כאן מתחיל האילן שלנו','הוסיפו את האדם הראשון או ייבאו אילן קיים.');
+  if(!pageFamily.people.length)html=empty('♧','כאן מתחיל האילן שלנו','הוסיפו אדם לענף הזה או שייכו אליו אנשים דרך ניהול האילן.');
   $('#tree-canvas').innerHTML=html;$('#tree-canvas').style.width=`${width}px`;$('#tree-canvas').style.height=`${height}px`;
-  const count=treePeople.filter(isVisible).length;$('#tree-status').textContent=`${count} מתוך ${family.people.length} אנשים · ${scope.max-scope.min+1} דורות${query||branch!=='all'?' · התאמות מודגשות':''}`;applyZoom();
+  const count=treePeople.filter(isVisible).length;$('#tree-status').textContent=`${count} מתוך ${pageFamily.people.length} אנשים · ${pageFamily.people.length?scope.max-scope.min+1:0} דורות${query?' · התאמות מודגשות':''}`;applyZoom();
 }
 function applyZoom(){if(!layout)return;$('#tree-canvas').style.transform=`scale(${zoom})`;$('#tree-space').style.width=`${layout.width*zoom}px`;$('#tree-space').style.height=`${layout.height*zoom}px`;$('#zoom-label').textContent=`${Math.round(zoom*100)}%`;$('#zoom-out').disabled=zoom<=.3;$('#zoom-in').disabled=zoom>=1.6;}
 function centerOn(id){const box=$('#tree-viewport'),point=layout.positions.get(id);if(!point)return;box.scrollLeft=Math.max(0,(point.x+82)*zoom-box.clientWidth/2);box.scrollTop=Math.max(0,(point.y+73)*zoom-box.clientHeight/2);}
 function fitTree(){zoom=.9;applyZoom();centerOn(focusId);}
-function relatives(ids){return ids.map(id=>byId(id)).filter(Boolean).map(p=>`<button class="relative-link" data-person="${esc(p.id)}">${esc(p.name)} ←</button>`).join('');}
+function profileLink(person,label=person.name){if(pageFamily.people.some(p=>p.id===person.id))return `<button class="relative-link" data-person="${esc(person.id)}">${esc(label)} ←</button>`;if(['tavori','gorsht'].includes(person.branch))return `<a class="relative-link cross-family" href="${person.branch}.html?person=${encodeURIComponent(person.id)}">${esc(label)} · ${esc(BRANCH_NAMES[person.branch])} ↗</a>`;return `<span class="relative-link">${esc(label)} · טרם שויך לאילן</span>`;}
+function relatives(ids){return ids.map(id=>byId(id)).filter(Boolean).map(p=>profileLink(p)).join('');}
 function openProfile(id){const person=byId(id);if(!person)return;
   const children=family.people.filter(p=>p.parentIds.includes(id)).map(p=>p.id);
   const facts=[['שם נעורים',person.maidenName],['תאריך לידה',person.birthDate],['מקום לידה',person.birthPlace],['תאריך פטירה',person.deathDate],['מקום מגורים',person.residence],['עיסוק',person.occupation]].filter(([,value])=>value);
@@ -56,7 +59,7 @@ function openEditor(id='',parentId=''){
   if(!editing)return;$('#profile-dialog').close();form.reset();$('#form-error').hidden=true;const person=id?byId(id):null;pendingPhoto=person?.photo||'';
   $('#edit-title').textContent=person?'עריכת בן משפחה':'הוספת בן משפחה';form.elements.id.value=id;
   for(const field of ['name','maidenName','birthDate','birthPlace','deathDate','residence','occupation','bio'])form.elements[field].value=person?.[field]||'';
-  form.elements.branch.value=person?.branch||(parentId?byId(parentId)?.branch:'tavori')||'other';form.elements.lifeStatus.value=person?.lifeStatus||'unknown';
+  form.elements.branch.value=person?.branch||(parentId?byId(parentId)?.branch:pageBranch)||pageBranch;form.elements.lifeStatus.value=person?.lifeStatus||'unknown';
   for(const field of ['parentIds','partnerIds']){const selected=person?.[field]||(field==='parentIds'&&parentId?[parentId]:[]);form.elements[field].innerHTML=family.people.filter(p=>p.id!==id).map(p=>`<option value="${esc(p.id)}" ${selected.includes(p.id)?'selected':''}>${esc(p.name)} · ${esc(BRANCH_NAMES[p.branch])}</option>`).join('');}
   $('#photo-preview').hidden=!pendingPhoto;if(pendingPhoto)$('#photo-preview').src=pendingPhoto;$('#edit-dialog').showModal();
 }
@@ -81,20 +84,20 @@ async function readPhoto(file){
 }
 document.addEventListener('click',event=>{
   const person=event.target.closest('[data-person]');if(person){openProfile(person.dataset.person);return;}
-  const focus=event.target.closest('[data-focus]');if(focus){focusId=focus.dataset.focus;view='tree';branch='all';query='';$('#search').value='';$('#profile-dialog').close();render();fitTree();return;}
+  const focus=event.target.closest('[data-focus]');if(focus){if(!pageFamily.people.some(p=>p.id===focus.dataset.focus)){toast('האדם נמצא בענף אחר. ניתן לערוך אותו כאן, או לעבור לדף המשפחה שלו.');return;}focusId=focus.dataset.focus;view='tree';query='';$('#search').value='';$('#profile-dialog').close();render();fitTree();return;}
   const nav=event.target.closest('[data-view]');if(nav){view=nav.dataset.view;render();if(view==='tree')fitTree();return;}
-  const tab=event.target.closest('[data-branch]');if(tab){branch=tab.dataset.branch;render();centerOn(treePeople.find(isVisible)?.id);return;}
   const edit=event.target.closest('[data-edit]');if(edit){openEditor(edit.dataset.edit);return;}
   const child=event.target.closest('[data-child]');if(child){openEditor('',child.dataset.child);return;}
   if(event.target.closest('[data-add]')){view='people';render();toast('בחרו בן משפחה כדי לערוך את הפרטים, התמונות והסיפור שלו.');}
   if(event.target.closest('[data-close]'))event.target.closest('dialog')?.close();
 });
-$('#search').addEventListener('input',event=>{query=event.target.value.trim();if(query){const match=family.people.find(isVisible);if(match){const level=fullLayout.positions.get(match.id)?.level;if(level<scope.min||level>scope.max)focusId=match.id;}}render();if(query)centerOn(treePeople.find(isVisible)?.id);else centerOn(focusId);});
+$('#search').addEventListener('input',event=>{query=event.target.value.trim();if(query){const match=pageFamily.people.find(isVisible);if(match){const level=fullLayout.positions.get(match.id)?.level;if(level<scope.min||level>scope.max)focusId=match.id;}}render();if(query)centerOn(treePeople.find(isVisible)?.id);else centerOn(focusId);});
 $('#focus-person').addEventListener('change',event=>{focusId=event.target.value;render();fitTree();});
 $('#generations').addEventListener('change',event=>{generationLimit=event.target.value;render();fitTree();});
 $('#zoom-in').addEventListener('click',()=>{zoom=Math.min(1.6,Math.round((zoom+.1)*100)/100);applyZoom();});
 $('#zoom-out').addEventListener('click',()=>{zoom=Math.max(.3,Math.round((zoom-.1)*100)/100);applyZoom();});$('#fit').addEventListener('click',fitTree);
 $('#manage').addEventListener('click',()=>$('#manage-dialog').showModal());$('#about').addEventListener('click',()=>$('#about-dialog').showModal());
+$('#edit-managed-person').addEventListener('click',()=>{const id=$('#manage-person').value;if(!editing||!id)return;$('#manage-dialog').close();openEditor(id);});
 $('#enter-editor').addEventListener('click',enterEditing);$('#add-person').addEventListener('click',()=>openEditor());
 $('#leave-editor').addEventListener('click',()=>{editing=false;family=structuredClone(published);render();fitTree();});
 $('#export').addEventListener('click',exportFamily);$('#export-from-manager').addEventListener('click',exportFamily);

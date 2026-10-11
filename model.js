@@ -43,6 +43,17 @@ export function updatePerson(family,person){
   if(!old&&!copy.rootId)copy.rootId=person.id;
   return normalizeFamily(copy);
 }
+export function projectFamily(family,branch){
+  if(!['tavori','gorsht'].includes(branch))throw new Error('ענף משפחתי לא נתמך.');
+  const members=family.people.filter(p=>p.branch===branch||p.branch==='shared');
+  const ids=new Set(members.map(p=>p.id));
+  // Keep direct spouses at the family boundary, without bringing their other branch.
+  for(const person of members)for(const id of person.partnerIds)ids.add(id);
+  const people=family.people.filter(p=>ids.has(p.id)).map(p=>({...p,parentIds:p.parentIds.filter(id=>ids.has(id)),partnerIds:p.partnerIds.filter(id=>ids.has(id))}));
+  const preferredRoot=branch==='tavori'?'omer':'maya';
+  const rootId=people.find(p=>p.id===preferredRoot&&p.branch===branch)?.id||people.find(p=>p.branch===branch)?.id||people[0]?.id||'';
+  return {...family,rootId,people};
+}
 export function layoutTree(people){
   const byId=new Map(people.map(p=>[p.id,p])),children=new Map(people.map(p=>[p.id,[]]));
   const pending=new Map(people.map(p=>[p.id,p.parentIds.filter(id=>byId.has(id)).length]));
