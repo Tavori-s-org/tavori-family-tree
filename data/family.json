@@ -1,0 +1,404 @@
+{
+  "version": 1,
+  "title": "הסיפור המשפחתי שלנו",
+  "subtitle": "משפחות תבורי וגורשט",
+  "rootId": "omer",
+  "people": [
+    {
+      "id": "amichai",
+      "name": "עמיחי תבורי",
+      "branch": "tavori",
+      "parentIds": [
+        "simcha",
+        "leah-bibas"
+      ],
+      "partnerIds": [
+        "leah"
+      ]
+    },
+    {
+      "id": "leah",
+      "name": "לאה תבורי",
+      "branch": "tavori",
+      "parentIds": [],
+      "partnerIds": [
+        "amichai"
+      ]
+    },
+    {
+      "id": "leon",
+      "name": "ליאון גורשט",
+      "branch": "gorsht",
+      "parentIds": [],
+      "partnerIds": [
+        "ilana"
+      ]
+    },
+    {
+      "id": "ilana",
+      "name": "אילנה גורשט",
+      "branch": "gorsht",
+      "parentIds": [],
+      "partnerIds": [
+        "leon"
+      ]
+    },
+    {
+      "id": "omer",
+      "name": "עומר תבורי",
+      "branch": "tavori",
+      "parentIds": [
+        "amichai",
+        "leah"
+      ],
+      "partnerIds": [
+        "maya"
+      ]
+    },
+    {
+      "id": "maya",
+      "name": "מיה תבורי",
+      "branch": "gorsht",
+      "parentIds": [
+        "leon",
+        "ilana"
+      ],
+      "partnerIds": [
+        "omer"
+      ]
+    },
+    {
+      "id": "yonatan",
+      "name": "יונתן",
+      "branch": "shared",
+      "parentIds": [
+        "omer",
+        "maya"
+      ],
+      "partnerIds": []
+    },
+    {
+      "id": "daniel",
+      "name": "דניאל",
+      "branch": "shared",
+      "parentIds": [
+        "omer",
+        "maya"
+      ],
+      "partnerIds": []
+    },
+    {
+      "id": "yuval",
+      "name": "יובל",
+      "branch": "shared",
+      "parentIds": [
+        "omer",
+        "maya"
+      ],
+      "partnerIds": []
+    },
+    {
+      "id": "shachar-tavori",
+      "name": "שחר",
+      "branch": "tavori",
+      "parentIds": [
+        "amichai",
+        "leah"
+      ],
+      "partnerIds": [
+        "revital"
+      ]
+    },
+    {
+      "id": "idan",
+      "name": "עידן",
+      "branch": "tavori",
+      "parentIds": [
+        "amichai",
+        "leah"
+      ],
+      "partnerIds": []
+    },
+    {
+      "id": "revital",
+      "name": "רויטל",
+      "branch": "tavori",
+      "parentIds": [],
+      "partnerIds": [
+        "shachar-tavori"
+      ]
+    },
+    {
+      "id": "ron-shachar-revital",
+      "name": "רון",
+      "branch": "tavori",
+      "parentIds": [
+        "shachar-tavori",
+        "revital"
+      ],
+      "partnerIds": []
+    },
+    {
+      "id": "itai",
+      "name": "איתי",
+      "branch": "tavori",
+      "parentIds": [
+        "shachar-tavori",
+        "revital"
+      ],
+      "partnerIds": []
+    },
+    {
+      "id": "raz",
+      "name": "רז",
+      "branch": "tavori",
+      "parentIds": [
+        "shachar-tavori",
+        "revital"
+      ],
+      "partnerIds": []
+    },
+    {
+      "id": "tal",
+      "name": "טל",
+      "branch": "gorsht",
+      "parentIds": [
+        "leon",
+        "ilana"
+      ],
+      "partnerIds": [
+        "shachar-baum-davidoff"
+      ]
+    },
+    {
+      "id": "shachar-baum-davidoff",
+      "name": "שחר באום-דוידוף",
+      "branch": "gorsht",
+      "parentIds": [],
+      "partnerIds": [
+        "tal"
+      ]
+    },
+    {
+      "id": "ron-tal-shachar",
+      "name": "רון",
+      "branch": "gorsht",
+      "parentIds": [
+        "tal",
+        "shachar-baum-davidoff"
+      ],
+      "partnerIds": []
+    },
+    {
+      "id": "or",
+      "name": "אור",
+      "branch": "gorsht",
+      "parentIds": [
+        "tal",
+        "shachar-baum-davidoff"
+      ],
+      "partnerIds": []
+    },
+    {
+      "id": "simcha",
+      "name": "שמחה תבורי",
+      "branch": "tavori",
+      "parentIds": [
+        "avraham-solomon",
+        "pnina"
+      ],
+      "partnerIds": [
+        "leah-bibas"
+      ],
+      "birthDate": "13 במרץ 1907",
+      "birthPlace": "קלוז'",
+      "deathDate": "14 במרץ 1956",
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים גלויים מתוך MyHeritage. נקרא ב־11.10.2026. הקשר לעמיחי אושר על ידי עומר."
+    },
+    {
+      "id": "leah-bibas",
+      "name": "לאה תבורי",
+      "branch": "tavori",
+      "parentIds": [
+        "haim-bibas",
+        "rachel-bibas"
+      ],
+      "partnerIds": [
+        "simcha"
+      ],
+      "maidenName": "ביבאס",
+      "birthDate": "1915?",
+      "birthPlace": "ירושלים, ישראל",
+      "deathDate": "1 בינואר 2011",
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים גלויים מתוך MyHeritage. נקרא ב־11.10.2026. שנת הלידה מסומנת כספק במקור. הקשר לעמיחי אושר על ידי עומר."
+    },
+    {
+      "id": "avraham-solomon",
+      "name": "אברהם חיים (אדולף) סולומון",
+      "branch": "tavori",
+      "parentIds": [
+        "yaakov-shlomo",
+        "sarah-solomon"
+      ],
+      "partnerIds": [
+        "pnina"
+      ],
+      "birthDate": "1882",
+      "deathDate": "12 במאי 1955",
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים גלויים מתוך MyHeritage. נקרא ב־11.10.2026.",
+      "birthPlace": "הונגריה"
+    },
+    {
+      "id": "pnina",
+      "name": "פנינה סולומון",
+      "branch": "tavori",
+      "parentIds": [
+        "avraham-yaakov-brown"
+      ],
+      "partnerIds": [
+        "avraham-solomon"
+      ],
+      "maidenName": "בראון",
+      "birthDate": "1886",
+      "deathDate": "1929",
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים גלויים מתוך MyHeritage. נקרא ב־11.10.2026.",
+      "birthPlace": "הונגריה"
+    },
+    {
+      "id": "haim-bibas",
+      "name": "חיים ביבס",
+      "branch": "tavori",
+      "parentIds": [],
+      "partnerIds": [
+        "rachel-bibas"
+      ],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים גלויים מתוך MyHeritage. נקרא ב־11.10.2026."
+    },
+    {
+      "id": "rachel-bibas",
+      "name": "רחל ביבס",
+      "branch": "tavori",
+      "parentIds": [],
+      "partnerIds": [
+        "haim-bibas"
+      ],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים גלויים מתוך MyHeritage. נקרא ב־11.10.2026."
+    },
+    {
+      "id": "yaakov-shlomo",
+      "name": "יעקב שלמה סולומון",
+      "branch": "tavori",
+      "parentIds": [],
+      "partnerIds": [
+        "sarah-solomon"
+      ],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים וקשרים גלויים מתוך MyHeritage. נקרא ב־11.10.2026."
+    },
+    {
+      "id": "sarah-solomon",
+      "name": "שרה סולומון",
+      "branch": "tavori",
+      "parentIds": [],
+      "partnerIds": [
+        "yaakov-shlomo"
+      ],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים וקשרים גלויים מתוך MyHeritage. נקרא ב־11.10.2026."
+    },
+    {
+      "id": "avraham-yaakov-brown",
+      "name": "אברהם יעקב בראון",
+      "branch": "tavori",
+      "parentIds": [],
+      "partnerIds": [],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים וקשרים גלויים מתוך MyHeritage. נקרא ב־11.10.2026."
+    },
+    {
+      "id": "rachel-solomon",
+      "name": "רחל סולומון",
+      "branch": "tavori",
+      "parentIds": [
+        "avraham-solomon",
+        "pnina"
+      ],
+      "partnerIds": [],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים וקשרים גלויים מתוך MyHeritage. נקרא ב־11.10.2026.",
+      "birthDate": "1905"
+    },
+    {
+      "id": "aharon-solomon",
+      "name": "אהרון סולומון",
+      "branch": "tavori",
+      "parentIds": [
+        "avraham-solomon",
+        "pnina"
+      ],
+      "partnerIds": [],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים וקשרים גלויים מתוך MyHeritage. נקרא ב־11.10.2026.",
+      "birthDate": "1908"
+    },
+    {
+      "id": "david-solomon",
+      "name": "דוד סולומון",
+      "branch": "tavori",
+      "parentIds": [
+        "avraham-solomon",
+        "pnina"
+      ],
+      "partnerIds": [],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים וקשרים גלויים מתוך MyHeritage. נקרא ב־11.10.2026.",
+      "birthDate": "1910"
+    },
+    {
+      "id": "hana-solomon",
+      "name": "חנה סולומון",
+      "branch": "tavori",
+      "parentIds": [
+        "avraham-solomon",
+        "pnina"
+      ],
+      "partnerIds": [],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים וקשרים גלויים מתוך MyHeritage. נקרא ב־11.10.2026.",
+      "birthDate": "1910"
+    },
+    {
+      "id": "yehuda-solomon",
+      "name": "יהודה סולומון",
+      "branch": "tavori",
+      "parentIds": [
+        "avraham-solomon",
+        "pnina"
+      ],
+      "partnerIds": [],
+      "lifeStatus": "deceased",
+      "source": "https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI",
+      "sourceNote": "פרטים וקשרים גלויים מתוך MyHeritage. נקרא ב־11.10.2026.",
+      "birthDate": "1912"
+    }
+  ]
+}
