@@ -63,3 +63,11 @@ npm test
 מעל האילן אפשר לבחור אדם מרכזי ו־3, 4, 5 או את כל הדורות. ברירת המחדל מציגה את דור ההורים של המשפחה הנבחרת, הדור של עומר ומיה ודור הילדים. המספר מונה שורות של דורות; כשנבחר אדם בקצה האילן, הטווח זז כדי לכלול אותו ואת הדורות הקיימים. אין קשר בין מספר הדור לשנת הלידה.
 
 אפשר גם לפתוח כרטיס אישי וללחוץ **הצגה במרכז האילן**. פעולה זו משנה את התצוגה בלבד ואינה עורכת את הנתונים. בחירת דורות מסתירה כרטיסים וקשרים שמחוץ לטווח; הקשרים עצמם נשארים בנתונים. החיפוש יכול לעבור לאדם הנמצא מחוץ לטווח הנוכחי. בני זוג מוצגים באותה שורה, והקשר לילדיהם יוצא מחיבור משותף. לקבצי התצוגה יש סימון גרסה בכתובת כדי להימנע מערבוב גרסאות של JavaScript ו־CSS לאחר פרסום.
+
+## Shared editing
+
+The public pages read current family data from https://tavori-family-editor.blush-guppy-7385.chatgpt.site/api/family. `service.js` contains the service origin and editor links. If the service is unavailable, the pages show the original GitHub JSON backup and a status message. A refresh after editing loads the latest shared records.
+
+“כניסה ועריכה” opens the authenticated family editor in a separate tab. Signed-in guests can update details, relationships and photos directly. D1 persists records and change history; R2 persists compressed images. The editor rejects stale concurrent edits and ancestry cycles. The local draft editor remains a separate manual backup workflow; GitHub changes do not overwrite shared person overlays. When changing the base dataset, update `lib/family.json` in the service too.
+
+The backend checkout is `../family-tree-service`; its source is published through Sites. No authentication tokens are included in the GitHub Pages code.

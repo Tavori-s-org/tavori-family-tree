@@ -2,7 +2,8 @@ export const BRANCH_NAMES = {tavori:'משפחת תבורי',gorsht:'משפחת �
 export const SOURCE_URL = 'https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI';
 const TEXT_FIELDS = ['name','maidenName','birthDate','birthPlace','deathDate','residence','occupation','bio','sourceNote'];
 export function escapeHtml(value=''){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
-export function safePhoto(value){return typeof value==='string' && /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value) ? value : '';}
+export const PHOTO_ORIGIN = 'https://tavori-family-editor.blush-guppy-7385.chatgpt.site';
+export function safePhoto(value){if(typeof value==='string' && value.startsWith(PHOTO_ORIGIN+'/api/photos/') && /^[a-f0-9-]{36}$/.test(value.slice((PHOTO_ORIGIN+'/api/photos/').length)))return value;return typeof value==='string' && /^data:image\/(?:jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value) ? value : '';}
 export function normalizeFamily(input){
   if(!input || input.version!==1 || !Array.isArray(input.people) || input.people.length>5000) throw new Error('קובץ האילן אינו תקין או מכיל יותר מ־5,000 אנשים.');
   const ids=new Set();
@@ -80,11 +81,11 @@ export function layoutTree(people){
     row.sort((a,b)=>{const aKey=a.parentIds[0]||a.id,bKey=b.parentIds[0]||b.id;return aKey.localeCompare(bKey);});
     const ordered=[],used=new Set();for(const p of row)if(!used.has(p.id)){ordered.push(p);used.add(p.id);for(const id of p.partnerIds){const spouse=row.find(s=>s.id===id);if(spouse&&!used.has(id)){ordered.push(spouse);used.add(id);}}}row.splice(0,row.length,...ordered);
   }
-  const cardWidth=164,cardHeight=146,gap=34,rowHeight=218,padding=68;
+  const cardWidth=196,cardHeight=224,gap=34,rowHeight=292,padding=68;
   const width=Math.max(650,...rows.filter(Boolean).map(row=>row.length*(cardWidth+gap)-gap+padding*2));
   const height=Math.max(380,rows.length*rowHeight+30),positions=new Map();
   rows.forEach((row,level)=>{if(!row)return;const rowWidth=row.length*(cardWidth+gap)-gap;row.forEach((p,index)=>positions.set(p.id,{x:(width-rowWidth)/2+(row.length-index-1)*(cardWidth+gap),y:42+level*rowHeight,level}));});
-  return {width,height,positions,rows,cardWidth,cardHeight};
+  return {width,height,positions,rows,cardWidth,cardHeight,rowHeight};
 }
 export function generationWindow(layout,focusId,limit='all'){
   const total=layout.rows.length,focusLevel=layout.positions.get(focusId)?.level||0;
