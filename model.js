@@ -1,5 +1,5 @@
-import {parseFamilyDate,normalizeFamilyDate} from './genealogy-dates.js?v=20261011-8';
-import {normalizeBirthLocation,formatBirthLocation} from './birth-places.js?v=20261011-8';
+import {parseFamilyDate,normalizeFamilyDate} from './genealogy-dates.js?v=20261016-9';
+import {normalizeBirthLocation,formatBirthLocation} from './birth-places.js?v=20261016-9';
 export const BRANCH_NAMES = {tavori:'משפחת תבורי',gorsht:'משפחת גורשט',shared:'ענף משותף',other:'ענף נוסף'};
 export const SOURCE_URL = 'https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI';
 const TEXT_FIELDS = ['name','maidenName','birthDate','birthPlace','deathDate','residence','occupation','bio','sourceNote','alternateNames','deathPlace','burialPlace','nationality','education','languages','militaryService','migration'];
