@@ -115,3 +115,11 @@ Local previews on `127.0.0.1` read the backend on port 5173; the public website 
 ייצוא JSON במסך הטיוטה נשאר כלי נפרד שאינו כולל קובצי תמונות חיצוניים. מחוץ למצב טיוטה הוא מייצא את הנתונים הציבוריים שנטענו, ואינו בוחר בטעות טיוטה ישנה מהדפדפן.
 
 טופס הזיכרונות מאפשר חיפוש אנשים, סימון בתיבות, הסרת בחירות וקריאת שמות ההורים להבחנה בין אנשים בעלי שם זהה. בחירה נשמרת במהלך סינון. פתיחת זיכרון מפרופיל בוחרת מראש את האדם; שינויים לא שמורים מוגנים בעת מעבר לרשומה אחרת, ויש פס שמירה מותאם לנייד.
+
+## Person creation and relationships
+
+The authenticated editor links existing children and creates new parents, partners or children without leaving the current person. New relatives remain drafts until the main card is saved; all records and reciprocal relationships commit together under the expected revision. Linking or unlinking a child changes only the current parent, preserving other parents. Adding a child optionally selects a known second parent; spouses are not automatically assigned as parents. Cycles, missing references and overwritten existing relative IDs reject the whole update.
+
+Country selection uses one searchable birth-country control. Optional nationality/cultural identity is a separate identity field, no longer repeated under life stations. Birth and death share precision modes and the keyboard-accessible calendar. Recognized death dates normalize to ISO; unchanged legacy dates remain editable without guessing a century. Invalid chronology is rejected. The card has close and save-and-close actions, with an explicit unsaved-changes dialog when needed.
+
+Validation: frontend `npm test` includes relationship atomicity and death-date tests. Backend `node tests/relations-api.mjs` uses local mock authentication only and restores its local pre-test backup.

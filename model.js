@@ -1,5 +1,5 @@
-import {parseFamilyDate,normalizeFamilyDate} from './genealogy-dates.js?v=20261016-9';
-import {normalizeBirthLocation,formatBirthLocation} from './birth-places.js?v=20261016-9';
+import {parseFamilyDate,normalizeFamilyDate} from './genealogy-dates.js?v=20261016-10';
+import {normalizeBirthLocation,formatBirthLocation} from './birth-places.js?v=20261016-10';
 export const BRANCH_NAMES = {tavori:'משפחת תבורי',gorsht:'משפחת גורשט',shared:'ענף משותף',other:'ענף נוסף'};
 export const SOURCE_URL = 'https://www.myheritage.co.il/family-trees/tavorifamily/OYYV7WMCSUUHNRKZSIVMAJKW4PATMJI';
 const TEXT_FIELDS = ['name','maidenName','birthDate','birthPlace','deathDate','residence','occupation','bio','sourceNote','alternateNames','deathPlace','burialPlace','nationality','education','languages','militaryService','migration'];
@@ -15,7 +15,7 @@ export function normalizeFamily(input){
     const person={id:raw.id,branch:raw.branch in BRANCH_NAMES ? raw.branch : 'other',parentIds:[],partnerIds:[],lifeStatus:['unknown','living','deceased'].includes(raw.lifeStatus)?raw.lifeStatus:'unknown'};
     for(const field of TEXT_FIELDS){if(raw[field]!==undefined && typeof raw[field]!=='string')throw new Error('שדה טקסט לא תקין.');person[field]=(raw[field]||'').trim();if(person[field].length>(field==='bio'?20000:field==='sourceNote'?2000:200))throw new Error('אחד משדות הטקסט ארוך מדי.');}
     if(!person.name)throw new Error('יש לתת שם לכל אדם.');
-    person.birthDate=normalizeFamilyDate(person.birthDate);person.birthLocation=normalizeBirthLocation(raw.birthLocation);
+    person.birthDate=normalizeFamilyDate(person.birthDate);person.deathDate=normalizeFamilyDate(person.deathDate);person.birthLocation=normalizeBirthLocation(raw.birthLocation);
     if(person.birthLocation){person.birthPlace=formatBirthLocation(person.birthLocation);if(person.birthPlace.length>200)throw new Error('מקום הלידה ארוך מדי.');}
     for(const field of ['parentIds','partnerIds']){
       if(raw[field]!==undefined && (!Array.isArray(raw[field]) || raw[field].some(id=>typeof id!=='string')))throw new Error('רשימת קשרים אינה תקינה.');
@@ -49,14 +49,30 @@ export function normalizeFamily(input){
   const entryIds=new Set();const entries=(input.entries||[]).map(raw=>{const entry=normalizeEntry(raw,people);if(entryIds.has(entry.id))throw new Error('מזהה אירוע כפול.');entryIds.add(entry.id);return entry;});
   return {version:1,entries,title:typeof input.title==='string'?input.title.slice(0,200):'הסיפור המשפחתי שלנו',subtitle:typeof input.subtitle==='string'?input.subtitle.slice(0,200):'משפחות תבורי וגורשט',rootId:ids.has(input.rootId)?input.rootId:(people[0]?.id||''),people};
 }
-export function updatePerson(family,person){
-  const copy=structuredClone(family);const old=copy.people.find(p=>p.id===person.id);
-  if(parseFamilyDate(person.birthDate||'').precision==='legacy'&&(person.birthDate||'')!==(old?.birthDate||''))throw new Error('יש להזין תאריך לידה מלא עם שנה בארבע ספרות, או שנה בלבד.');
-  for(const other of copy.people){other.partnerIds=other.partnerIds.filter(id=>id!==person.id);}
+export function updatePerson(family,person){return updatePersonWithRelations(family,person);}
+export function updatePersonWithRelations(family,person,relatedPeople=[],childIds){
+  if(!person||typeof person.id!=='string'||!Array.isArray(relatedPeople)||relatedPeople.length>40)throw new Error('פרטי האדם או הקרובים החדשים אינם תקינים.');
+  if(childIds!==undefined&&(!Array.isArray(childIds)||childIds.some(id=>typeof id!=='string')||childIds.length>5000||new Set(childIds).size!==childIds.length))throw new Error('רשימת הילדים אינה תקינה.');
+  const copy=structuredClone(family),existing=new Map(copy.people.map(p=>[p.id,p])),added=new Set();
+  const direct=new Set([...(person.parentIds||[]),...(person.partnerIds||[]),...(childIds||[])]);
+  for(const p of relatedPeople){if(!p||typeof p.id!=='string'||p.id===person.id||existing.has(p.id)||added.has(p.id)||!direct.has(p.id))throw new Error('כל קרוב חדש חייב להיות אדם חדש ולקושר לכרטיס הנוכחי.');added.add(p.id);}
+  for(const p of [person,...relatedPeople]){
+    const old=existing.get(p.id);
+    for(const field of ['birthDate','deathDate'])if(parseFamilyDate(p[field]||'').precision==='legacy'&&(p[field]||'')!==(old?.[field]||''))throw new Error('יש להזין תאריך מלא עם שנה בארבע ספרות, או שנה בלבד.');
+    if(p.deathDate&&p.lifeStatus==='living')throw new Error('תאריך פטירה אינו מתאים למצב ״בחיים״.');
+    const birth=parseFamilyDate(p.birthDate||''),death=parseFamilyDate(p.deathDate||'');
+    if(birth.precision==='date'&&death.precision==='date'&&!birth.approximate&&!death.approximate&&death.value<birth.value)throw new Error('תאריך הפטירה קודם לתאריך הלידה.');
+  }
+  copy.people.push(...structuredClone(relatedPeople));
   const index=copy.people.findIndex(p=>p.id===person.id);
-  if(index>=0)copy.people[index]=person;else copy.people.push(person);
-  for(const partnerId of person.partnerIds){const other=copy.people.find(p=>p.id===partnerId);if(other&&!other.partnerIds.includes(person.id))other.partnerIds.push(person.id);}
-  if(!old&&!copy.rootId)copy.rootId=person.id;
+  if(index>=0)copy.people[index]=structuredClone(person);else copy.people.push(structuredClone(person));
+  for(const other of copy.people)if(other.id!==person.id)other.partnerIds=other.partnerIds.filter(id=>id!==person.id||(person.partnerIds||[]).includes(other.id));
+  for(const partnerId of person.partnerIds||[]){const other=copy.people.find(p=>p.id===partnerId);if(other&&!other.partnerIds.includes(person.id))other.partnerIds.push(person.id);}
+  if(childIds!==undefined){
+    const known=new Set(copy.people.map(p=>p.id));if(childIds.some(id=>id===person.id||!known.has(id)))throw new Error('ילד שנבחר אינו קיים באילן, או זהה להורה.');
+    for(const other of copy.people)if(other.id!==person.id){if(childIds.includes(other.id)){if(!other.parentIds.includes(person.id))other.parentIds.push(person.id);}else other.parentIds=other.parentIds.filter(id=>id!==person.id);}
+  }
+  if(!existing.has(person.id)&&!copy.rootId)copy.rootId=person.id;
   return normalizeFamily(copy);
 }
 export function projectFamily(family,branch){

@@ -1,5 +1,5 @@
-import {normalizeFamily,projectFamily,layoutTree} from './model.js?v=20261016-9';
-import {loadFamily} from './service.js?v=20261016-9';
+import {normalizeFamily,projectFamily,layoutTree} from './model.js?v=20261016-10';
+import {loadFamily} from './service.js?v=20261016-10';
 try{
   const family=normalizeFamily((await loadFamily()).family);
   for(const branch of ['tavori','gorsht']){

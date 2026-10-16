@@ -1,4 +1,4 @@
-import {parseFamilyDate,isoDate} from './genealogy-dates.js?v=20261016-9';
+import {parseFamilyDate,isoDate} from './genealogy-dates.js?v=20261016-10';
 
 export function relationshipPath(people,fromId,toId){
   const byId=new Map(people.map(p=>[p.id,p]));
